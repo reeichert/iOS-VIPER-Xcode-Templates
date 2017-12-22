@@ -59,7 +59,7 @@ Now let's take a look at the references logic.
 
 * *LoginPresenter* has a **strong** to *LoginInteractor*
 * *LoginPresenter* has a **strong** to *LoginWireframe*
-* *LoginPresenter* has a **weak** reference to *LoginViewController*
+* *LoginPresenter* has a **unowned** reference to *LoginViewController*
 * *LoginViewController* has a **strong** reference to *LoginPresenter*
 
 
@@ -124,7 +124,7 @@ The Wireframe is used in 3 steps:
 
 1. Initialization using a *UINavigationController* (see the *init* method). Since the Wireframe is in charge of performing the navigation it needs access to the actual *UINavigationController* with which it will do so.
 2. Navigation to a screen (see the *show* method). For this we've defined 3 types of transitions which are pretty self explanatory (see the *Transition* enum).
-The *present* case is different because here we are actually presenting the *UINavigationController* over a presenter *UIViewController* (see *fromViewController* associated value in *.present* *Transition*). This might seem confusing at first but it's a more robust solution as opposed to using the *UINavigationController* as a presenter.
+  The *present* case is different because here we are actually presenting the *UINavigationController* over a presenter *UIViewController* (see *fromViewController* associated value in *.present* *Transition*). This might seem confusing at first but it's a more robust solution as opposed to using the *UINavigationController* as a presenter.
 3. Navigation from a screen (see the *popFromNavigationController* and *dismiss* methods).
 
 ### PresenterInterface
@@ -254,9 +254,9 @@ final class LoginPresenter {
 
     // MARK: - Private properties -
 
-    fileprivate weak var _view: LoginViewInterface?
-    fileprivate var _interactor: LoginInteractorInterface
-    fileprivate var _wireframe: LoginWireframeInterface
+    private unowned var _view: LoginViewInterface
+    private var _interactor: LoginInteractorInterface
+    private var _wireframe: LoginWireframeInterface
 
     // MARK: - Lifecycle -
 
@@ -318,13 +318,13 @@ final class LoginPresenter {
     // MARK: - Private properties -
     static private let minimumPasswordLength: UInt = 6
 
-    fileprivate weak var _view: LoginViewInterface?
-    fileprivate var _interactor: LoginInteractorInterface
-    fileprivate var _wireframe: LoginWireframeInterface
-    fileprivate let _authorizationManager = AuthorizationAdapter.shared
+    private unowned var _view: LoginViewInterface
+    private var _interactor: LoginInteractorInterface
+    private var _wireframe: LoginWireframeInterface
+    private let _authorizationManager = AuthorizationAdapter.shared
 
-    fileprivate let _emailValidator: StringValidator
-    fileprivate let _passwordValidator: StringValidator
+    private let _emailValidator: StringValidator
+    private let _passwordValidator: StringValidator
 
     // MARK: - Lifecycle -
     init (wireframe: LoginWireframeInterface, view: LoginViewInterface, interactor: LoginInteractorInterface) {
@@ -409,7 +409,7 @@ final class LoginWireframe: BaseWireframe {
         show(moduleViewController, with: transition, animated: animated)
     }
 
-    fileprivate func _openHome() {
+    private func _openHome() {
         let wireframe = HomeWireframe(navigationController: navigationController)
         wireframe.show(with: .root)
     }
